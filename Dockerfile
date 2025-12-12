@@ -1,8 +1,23 @@
-FROM python:3.10
-# Install Tkinter dependencies and other needed packages
-RUN apt-get update && apt-get install -y 
+FROM python:3.10-slim
+
+RUN apt-get update && apt-get install -y \
+    python3-tk \
+    tk \
+    x11-apps \
+    xauth \
+    xvfb \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV DISPLAY=host.docker.internal:0
+
+ENV XVFB_ARGS="-screen 0 1024x768x24"
+
 WORKDIR /app
+
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
 COPY . .
-# Install Python dependencies (if any)
-RUN pip install -r requirements.txt
+
 CMD ["python", "app.py"]
